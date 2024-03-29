@@ -24,11 +24,38 @@
 
       <IPInfo />
     </div>
+    <div id="map" class="h-full z-10"></div>
   </div>
 </template>
 
 <script setup>
+import {  onMounted } from "vue"
+
+import "leaflet/dist/leaflet.css"
+import * as L from 'leaflet'
+
 import ChevronRightIcon from 'vue-material-design-icons/ChevronRight.vue'
 
 import IPInfo from '@/components/IPInfo.vue';
+
+onMounted(async () => {
+  const map = L
+    .map('map', {
+      zoomControl: false,
+      preferCanvas: true,
+      attributionControl: false,
+      bounceAtZoomLimits: false
+    })
+    .setView([36.287938, 59.6131317], 12)
+
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map)
+
+})
 </script>
+
+<style lang="sass">
+ 
+</style>
