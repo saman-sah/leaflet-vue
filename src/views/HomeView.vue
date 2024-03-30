@@ -9,12 +9,14 @@
         </h1>
         <div class="flex">
           <input 
+            v-model="queryIp"
             class="flex-1 py-3 px-2 rounded-tl-md rounded-bl-md focus:outline-none"
             type="text"
             placeholder="Search for any IP address or leave empty to get your ip info"
           >
           <div class="flex cursor-pointer bg-black text-white rounded-tr-md rounded-br-md px-4 items-center">
-            <ChevronRightIcon 
+            <ChevronRightIcon
+              @click="getIpInfo"
               size="40" 
               class="" 
             />
@@ -22,24 +24,34 @@
         </div>
       </div>
 
-      <IPInfo />
+      <IPInfo 
+        v-if="ipInfo"
+        :ipInfo="ipInfo"        
+      />
     </div>
-    <div id="map" class="h-full z-10"></div>
+    <div 
+      id="map" 
+      class="h-full z-10" 
+    />
   </div>
 </template>
 
 <script setup>
-import {  onMounted } from "vue"
+import {  ref, onMounted } from "vue"
 
 import "leaflet/dist/leaflet.css"
 import * as L from 'leaflet'
-
-import ChevronRightIcon from 'vue-material-design-icons/ChevronRight.vue'
+import axios from 'axios'
 
 import IPInfo from '@/components/IPInfo.vue';
+import ChevronRightIcon from 'vue-material-design-icons/ChevronRight.vue'
+
+const queryIp = ref("")
+const ipInfo = ref(null)
+let map
 
 onMounted(async () => {
-  const map = L
+  map = L
     .map('map', {
       zoomControl: false,
       preferCanvas: true,
@@ -54,6 +66,21 @@ onMounted(async () => {
   }).addTo(map)
 
 })
+
+const getIpInfo = async () => {
+  try {
+    const data = await axios.get(`https://geo.ipify.org/api/v1?apiKey=at_OOV8MuA6k1oMoTUgOyZjPJpp3lmAY&ipAddress=${ queryIp.value }`, {
+    })
+    const result = data.data
+    console.log('result', result);
+    ipInfo.value = result
+
+    L.marker([ipInfo.value.location.lat, ipInfo.value.location.lng]).addTo(map);
+    map.setView([ipInfo.value.location.lat, ipInfo.value.location.lng], 14);
+  } catch (error) {
+    console.log('error', error);
+  }
+}
 </script>
 
 <style lang="sass">
