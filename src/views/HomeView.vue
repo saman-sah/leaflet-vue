@@ -76,7 +76,7 @@ const getIpInfo = async () => {
     ipInfo.value = result
 
     L.marker([ipInfo.value.location.lat, ipInfo.value.location.lng]).addTo(map);
-    map.setView([ipInfo.value.location.lat, ipInfo.value.location.lng], 14);
+    map.flyTo([ipInfo.value.location.lat, ipInfo.value.location.lng], 14);
   } catch (error) {
     console.log('error', error);
   }
